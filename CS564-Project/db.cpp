@@ -183,7 +183,7 @@ const Status File::destroy(const string & fileName)
 {
   if (remove(fileName.c_str()) < 0)
   {
-    cout << "db.destroy. unlink returned error" << "\n";
+    // cout << "db.destroy. unlink returned error" << "\n";
     return UNIXERR;
   }
 
@@ -466,8 +466,16 @@ DB::DB()
 
 DB::~DB()
 {
+  cerr << "DB destructure " << endl;
   // this could leave some open files open.
   // need to fix this by iterating through the hash table deleting each open file
+  for(int i = 0; i < openFiles.HTSIZE; i ++){
+    fileHashBucket* tmpBuc = openFiles.ht[i];
+    while(tmpBuc){
+      closeFile(tmpBuc->file);
+      tmpBuc = tmpBuc->next;
+    }
+  }
 }
 
 
@@ -539,6 +547,7 @@ const Status DB::openFile(const string & fileName, File*& filePtr)
       // Insert into the mapping table
       status = openFiles.insert(fileName, filePtr);
     }
+  cerr << "[db openFile] open file " << fileName << endl;
   return status;
 }
 
@@ -550,7 +559,7 @@ const Status DB::closeFile(File* file)
 {
   if (!file) return BADFILEPTR;
 
-
+  cerr << "[db closeFile]  Close File " << file->fileName << " " << file->openCnt<<  endl;
   // Close the file
   file->close();
 

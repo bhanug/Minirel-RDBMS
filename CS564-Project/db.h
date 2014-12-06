@@ -5,6 +5,7 @@
 #include <functional>
 #include "error.h"
 #include <string.h>
+#include <assert.h>
 using namespace std;
 
 // define if debug output wanted
@@ -76,11 +77,12 @@ struct fileHashBucket
 class OpenFileHashTbl
 {
 private:
-    int HTSIZE;
-    fileHashBucket**  ht; // actual hash table
     int	 hash(string fileName);  // returns value between 0 and HTSIZE-1
 
 public:
+  int HTSIZE;
+
+  fileHashBucket**  ht; // actual hash table
     OpenFileHashTbl();
     ~OpenFileHashTbl(); // destructor
 	
